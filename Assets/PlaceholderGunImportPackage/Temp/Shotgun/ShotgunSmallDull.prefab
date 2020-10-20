@@ -391,8 +391,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5094223889157158462}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.094, z: -0.099}
-  m_LocalScale: {x: 0.17036992, y: 0.06604262, z: 1}
+  m_LocalPosition: {x: -0.000000018626, y: 0.094, z: -0.099}
+  m_LocalScale: {x: 1.0046715, y: 0.3894533, z: 1}
   m_Children: []
   m_Father: {fileID: 2327015042937328007}
   m_RootOrder: 7
@@ -436,15 +436,15 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
   m_Color: {r: 0.23529412, g: 0.11764706, b: 0.32941177, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.16, y: 0.16}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &5507263348807067526
@@ -489,6 +489,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3780950939894428667}
   - component: {fileID: 3181227446153215909}
+  - component: {fileID: 7279919239670309178}
   m_Layer: 0
   m_Name: ShotgunSmallDull
   m_TagString: Untagged
@@ -530,6 +531,30 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &7279919239670309178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6531013459548670158}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bb4bfc3d3429be4d8d2cef4ecc0d573, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxAmmo: 5
+  ammoPerShot: 1
+  baseDamage: 20
+  criticalDamage: 0
+  range: 6
+  projectile: 0
+  firePosition: {fileID: 5222126639681183270}
+  tracer: 0
+  tracerPrefab: {fileID: 0}
+  tracerLifetime: 0.1
+  projectilePrefab: {fileID: 0}
+  recoil: 1
 --- !u!1 &7058259940649498347
 GameObject:
   m_ObjectHideFlags: 0

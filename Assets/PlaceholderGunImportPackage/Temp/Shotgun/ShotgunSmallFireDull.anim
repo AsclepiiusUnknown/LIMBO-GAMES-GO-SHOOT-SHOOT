@@ -719,7 +719,7 @@ AnimationClip:
   m_Events:
   - time: 0
     functionName: PlayAudioClip
-    data: 
+    data: shoot
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 6
@@ -733,7 +733,7 @@ AnimationClip:
     messageOptions: 0
   - time: 0.38333333
     functionName: PlayAudioClip
-    data: 
+    data: click
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 3
@@ -747,7 +747,7 @@ AnimationClip:
     messageOptions: 0
   - time: 0.6
     functionName: PlayAudioClip
-    data: 
+    data: click
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 4
