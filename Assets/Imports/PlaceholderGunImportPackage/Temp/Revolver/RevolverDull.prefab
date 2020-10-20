@@ -742,6 +742,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6147526220479546254}
   - component: {fileID: 7540637866751599347}
+  - component: {fileID: 5647483777780407700}
   m_Layer: 0
   m_Name: RevolverDull
   m_TagString: Untagged
@@ -783,6 +784,30 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &5647483777780407700
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2784302883984048806}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bb4bfc3d3429be4d8d2cef4ecc0d573, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxAmmo: 6
+  ammoPerShot: 1
+  baseDamage: 1
+  criticalDamage: 0
+  range: 100
+  projectile: 0
+  firePosition: {fileID: 0}
+  tracer: 0
+  tracerPrefab: {fileID: 0}
+  tracerLifetime: 0.1
+  projectilePrefab: {fileID: 0}
+  recoil: 1
 --- !u!1 &3100883576035323775
 GameObject:
   m_ObjectHideFlags: 0

@@ -881,14 +881,14 @@ AnimationClip:
   m_Events:
   - time: 1.4666667
     functionName: PlayAudioClip
-    data: 
+    data: click
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 3
     messageOptions: 0
   - time: 1.7833333
     functionName: PlayAudioClip
-    data: 
+    data: click
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 4
