@@ -12,8 +12,8 @@ namespace LIMBO.Movement
 
         #region ||Base Movement
         [Header("Base Movement")]
-        public float walkSpeed = 5;
-        public float runSpeed = 10;
+        public float walkSpeed = .7f;
+        public float runSpeed = 1.25f;
         [Range(0f, 1f)] public float stepLength = .7f;
 
         //*PRIVATE//
@@ -24,16 +24,16 @@ namespace LIMBO.Movement
         #endregion
 
         #region ||Damping
-        public float airDamping;
-        public float grndDamping;
+        public float airDamping = .5f;
+        public float grndDamping = .5f;
         #endregion
 
         #region ||Jumping
-        [Header("Jumping")] public float jumpSpeed = 10;
+        [Header("Jumping")] public float jumpSpeed = 9;
         public float jumpCut = .5f;
         public float coyoteJump = .2f;
         public float grndRemValue = .2f;
-        public bool canAirWalk;
+        public bool canAirWalk = true;
 
         //*PRIVATE
         private bool isJumping;
@@ -67,12 +67,12 @@ namespace LIMBO.Movement
         #endregion
 
         #region ||Effects
-        [Header("Effects")] public bool useFovKick = true;
-        public FOVKick fovKick = new FOVKick();
-        public bool useHeadBob = true;
-        public CurveControlledBob headBob = new CurveControlledBob();
-        public LerpControlledBob jumpBob = new LerpControlledBob();
-        public float stepInterval;
+        [Header("Effects")] private bool useFovKick = true;
+        private FOVKick fovKick = new FOVKick();
+        private bool useHeadBob = true;
+        private CurveControlledBob headBob = new CurveControlledBob();
+        private LerpControlledBob jumpBob = new LerpControlledBob();
+        private float stepInterval;
         #endregion
 
         #region ||Collision
@@ -108,6 +108,7 @@ namespace LIMBO.Movement
             if (_cam == null) return;
             _ogCameraPos = _cam.transform.localPosition;
             fovKick.Setup(_cam);
+            print(stepInterval);
             headBob.Setup(_cam, stepInterval);
             _nextStep = _stepCycle / 2f;
             mouseLook.Init(transform, _cam.transform);
@@ -335,8 +336,7 @@ namespace LIMBO.Movement
             if (_controller.velocity.magnitude > 0 && (grndRemValue > 0))
             {
                 var camTransform = _cam.transform;
-                camTransform.localPosition =
-                    headBob.DoHeadBob(_controller.velocity.magnitude + speed * (_isWalking ? 1f : stepLength));
+                camTransform.localPosition = headBob.DoHeadBob(_controller.velocity.magnitude + speed * (_isWalking ? 1f : stepLength));
                 newCameraPosition = camTransform.localPosition;
                 newCameraPosition.y = camTransform.localPosition.y - jumpBob.Offset();
             }

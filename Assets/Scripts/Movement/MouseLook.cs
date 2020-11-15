@@ -7,8 +7,8 @@ namespace LIMBO.Movement
     [Serializable]
     public class MouseLook
     {
-        public float xSensitivity = 2f;
-        public float ySensitivity = 2f;
+        public float xSensitivity = 3;
+        public float ySensitivity = 3;
         public float scopingMultiplier = .5f;
         public bool clampVerticalRotation = true;
         public float minX = -90F;
