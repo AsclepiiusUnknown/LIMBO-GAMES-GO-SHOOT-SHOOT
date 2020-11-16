@@ -10,73 +10,80 @@ namespace LIMBO.Movement
     {
         #region |VARIABLES
 
-        #region ||Base Movement
-        [Header("Base Movement")]
-        public float walkSpeed = .7f;
-        public float runSpeed = 1.25f;
-        [Range(0f, 1f)] public float stepLength = .7f;
+        #region ||Movement
+        [Header("Movement")]
+        [SerializeField] private float walkSpeed = 5;
+        [SerializeField] private float runSpeed = 10;
+        [SerializeField] private bool canAirWalk;
+        [Range(0f, 1f)]
+        [SerializeField] private float runStepLength = .7f;
+        [SerializeField] private float midAirDamping;
+        [SerializeField] private float movementDamping;
 
         //*PRIVATE//
         [HideInInspector] public bool _isWalking = true;
-        public bool _canRun = true;
-        private Vector2 moveInput;
-        private Vector3 moveDir = Vector3.zero;
-        #endregion
-
-        #region ||Damping
-        public float airDamping = .5f;
-        public float grndDamping = .5f;
+        [HideInInspector] public bool _canRun = true;
+        private Vector2 _moveInput;
+        private Vector3 _moveDir = Vector3.zero;
         #endregion
 
         #region ||Jumping
-        [Header("Jumping")] public float jumpSpeed = 9;
-        public float jumpCut = .5f;
-        public float coyoteJump = .2f;
-        public float grndRemValue = .2f;
-        public bool canAirWalk = true;
+        [Header("Jumping")]
+        [SerializeField] private float jumpSpeed = 10;
+        [SerializeField] private float jumpCut = .5f;
+        [SerializeField] private float coyoteJump = .2f;
+        [SerializeField] private float grndRem = .2f;
 
         //*PRIVATE
-        private bool isJumping;
-        private float coyoteKeeper;
-        private float grndRemKeeper;
-        private bool isGrounded;
+        private bool _jumping;
+        private float _coyoteJump;
+        private float _grndRem;
+        private bool _isGrounded;
         #endregion
 
         #region ||Mouse
-        [Header("Mouse")] public MouseLook mouseLook;
+        [Header("Mouse")]
+        [SerializeField] private MouseLook mouseLook;
 
         //*PRIVATE//
         private Camera _cam;
         #endregion
 
         #region ||Gravity
-        [Header("Gravity")] public float gravityScale = 2;
-        public float groundForce = 10;
+        [Header("Gravity")]
+        [SerializeField] private float gravityScale = 2;
+        [SerializeField] private float groundForce = 10;
 
         //*PRIVATE
+        /// <summary>
+        /// A bool to check/control whether or not this script should be applying gravity to this player at any point in time.
+        /// </summary>
         [HideInInspector] public bool _useGravity = true;
         #endregion
 
         #region ||Audio
-        [Header("Audio")] public AudioClip jumpSound; // the sound played when character leaves the ground.
-        public AudioClip landSound; // the sound played when character touches back on ground.
-        public AudioClip[] footstepSounds; // an array of footstep sounds that will be randomly selected from.
+        [Header("Audio")]
+        [SerializeField] private AudioClip jumpSound; // the sound played when character leaves the ground.
+        [SerializeField] private AudioClip landSound; // the sound played when character touches back on ground.
+        [SerializeField] private AudioClip[] footstepSounds; // an array of footstep sounds that will be randomly selected from.
 
         //*PRIVATE//
         private AudioSource _audioSource;
         #endregion
 
         #region ||Effects
-        [Header("Effects")] private bool useFovKick = true;
-        private FOVKick fovKick = new FOVKick();
-        private bool useHeadBob = true;
-        private CurveControlledBob headBob = new CurveControlledBob();
-        private LerpControlledBob jumpBob = new LerpControlledBob();
-        private float stepInterval;
+        [Header("Effects")]
+        [SerializeField] private bool useFovKick = true;
+        [SerializeField] private FOVKick fovKick = new FOVKick();
+        [SerializeField] private bool useHeadBob = true;
+        [SerializeField] private CurveControlledBob headBob = new CurveControlledBob();
+        [SerializeField] private LerpControlledBob jumpBob = new LerpControlledBob();
+        [SerializeField] private float stepInterval;
         #endregion
 
         #region ||Collision
-        [Header("Collision")] public float impactForceMultiplier = .2f;
+        [Header("Collision")]
+        [SerializeField] private float impactForceMultiplier = .2f;
         #endregion
 
         #region ||Misc
@@ -93,22 +100,18 @@ namespace LIMBO.Movement
 
         #endregion
 
-        private void Awake()
+        private void Start()
         {
             #region |Component Gathering
             _controller = GetComponent<CharacterController>();
             _audioSource = GetComponent<AudioSource>();
             _cam = Camera.main;
             #endregion
-        }
 
-        private void Start()
-        {
             #region |Component Setup
             if (_cam == null) return;
             _ogCameraPos = _cam.transform.localPosition;
             fovKick.Setup(_cam);
-            print(stepInterval);
             headBob.Setup(_cam, stepInterval);
             _nextStep = _stepCycle / 2f;
             mouseLook.Init(transform, _cam.transform);
@@ -124,8 +127,8 @@ namespace LIMBO.Movement
         {
             #region |Timers
 
-            coyoteKeeper -= Time.deltaTime;
-            grndRemKeeper -= Time.deltaTime;
+            _coyoteJump -= Time.deltaTime;
+            _grndRem -= Time.deltaTime;
 
             #endregion
 
@@ -143,25 +146,25 @@ namespace LIMBO.Movement
             #region ||Update Jump/Ground Input
 
             //Update Coyote timer for early input
-            if (Input.GetKeyDown(KeyCode.Space))
-                coyoteKeeper = coyoteJump;
+            if (Input.GetButtonDown("Jump"))
+                _coyoteJump = coyoteJump;
 
             //Update the Ground Remember timer for late input
             if (_controller.isGrounded)
-                grndRemKeeper = grndRemValue;
+                _grndRem = grndRem;
 
-            isGrounded = (grndRemKeeper > 0);
+            _isGrounded = (_grndRem > 0);
 
             #endregion
 
             #region ||Just Landing
 
-            if (!_prevGrounded && isGrounded)
+            if (!_prevGrounded && _isGrounded)
             {
                 StartCoroutine(jumpBob.DoBobCycle()); //Animate the landing
                 PlayLandingSound(); //Play landing sound effect
-                moveDir.y = 0f; //We are no longer moving moving on the Y axis (up/down)
-                isJumping = false; //we are no longer jumping
+                _moveDir.y = 0f; //We are no longer moving moving on the Y axis (up/down)
+                _jumping = false; //we are no longer jumping
             }
 
             #endregion
@@ -169,13 +172,13 @@ namespace LIMBO.Movement
             #region ||Just Jumping
 
             //??????
-            if (!isGrounded && !isJumping && _prevGrounded)
-                moveDir.y = 0f;
+            if (!_isGrounded && !_jumping && _prevGrounded)
+                _moveDir.y = 0f;
 
             #endregion
 
             //Update grounding variable for next frames checks
-            _prevGrounded = isGrounded;
+            _prevGrounded = _isGrounded;
 
             #endregion
 
@@ -195,7 +198,7 @@ namespace LIMBO.Movement
             GetInput(out var speed);
             // Always move along the cameras local forward as it is the direction that the player is facing
             // ReSharper disable once Unity.InefficientPropertyAccess
-            var desiredMove = transform.forward * moveInput.y + transform.right * moveInput.x;
+            var desiredMove = transform.forward * _moveInput.y + transform.right * _moveInput.x;
 
             #endregion
 
@@ -210,10 +213,10 @@ namespace LIMBO.Movement
 
             #region ||Movement Damping
 
-            moveDir.x += desiredMove.x * speed;
-            moveDir.z += desiredMove.z * speed;
-            moveDir.x *= Mathf.Pow(1 - grndDamping, Time.deltaTime * 10);
-            moveDir.z *= Mathf.Pow(1 - grndDamping, Time.deltaTime * 10);
+            _moveDir.x += desiredMove.x * speed;
+            _moveDir.z += desiredMove.z * speed;
+            _moveDir.x *= Mathf.Pow(1 - movementDamping, Time.deltaTime * 10);
+            _moveDir.z *= Mathf.Pow(1 - movementDamping, Time.deltaTime * 10);
             #endregion
 
             #region ||Ground Checks
@@ -223,29 +226,29 @@ namespace LIMBO.Movement
             if (_controller.isGrounded)
             {
                 //Apply a set force to ensure we remain on the ground
-                moveDir.y = -groundForce;
+                _moveDir.y = -groundForce;
             }
             else
             {
                 // Apply gravity modified by the custom gravity scale and time in order to bring us down
-                moveDir += Physics.gravity * (gravityScale * Time.fixedDeltaTime);
+                _moveDir += Physics.gravity * (gravityScale * Time.fixedDeltaTime);
             }
             // }
 
             // If we are grounded
-            if (isGrounded && coyoteKeeper > 0)
+            if (_isGrounded && _coyoteJump > 0)
             {
-                moveDir.y = jumpSpeed; //Apply the jump speed to the overall vertical movement
+                _moveDir.y = jumpSpeed; //Apply the jump speed to the overall vertical movement
                 PlayJumpSound(); //Play a jump sound effect
-                coyoteKeeper = 0; //Reset cause we have run the jump
-                isJumping = true; //We are now jumping
+                _coyoteJump = 0; //Reset cause we have run the jump
+                _jumping = true; //We are now jumping
             }
 
             #endregion
 
             #region ||Mid-Air Movement
             //if we are not (theoretically) grounded 
-            if (!isGrounded)
+            if (!_isGrounded)
             {
                 // If we can change velocity mid-air
                 if (canAirWalk)
@@ -257,22 +260,22 @@ namespace LIMBO.Movement
                 {
                     // Make the move direction the same as our current velocity
                     var velocity = _controller.velocity;
-                    moveDir.x = velocity.x;
-                    moveDir.z = velocity.z;
+                    _moveDir.x = velocity.x;
+                    _moveDir.z = velocity.z;
                 }
             }
 
             #endregion
 
             //Apply movement calculations using character controller
-            _collisionFlags = _controller.Move(moveDir * Time.fixedDeltaTime);
+            _collisionFlags = _controller.Move(_moveDir * Time.fixedDeltaTime);
 
             #endregion
 
             #region |Jump Cutting
 
             //If the jump is cancelled while still rising then cut the velocity by a set amount
-            if (Input.GetKeyUp(KeyCode.Space) && moveDir.y > 0) moveDir.y *= jumpCut;
+            if (Input.GetButtonUp("Jump") && _moveDir.y > 0) _moveDir.y *= jumpCut;
 
             #endregion
 
@@ -312,11 +315,11 @@ namespace LIMBO.Movement
 
             // Set the correct speed based off the running input
             speed = _isWalking ? walkSpeed : runSpeed;
-            moveInput = new Vector2(horizontal, vertical);
+            _moveInput = new Vector2(horizontal, vertical);
 
             // Normalize the move input if it exceeds the max of 1
-            if (moveInput.sqrMagnitude > 1)
-                moveInput.Normalize();
+            if (_moveInput.sqrMagnitude > 1)
+                _moveInput.Normalize();
 
             // If the player has just changed movement (run/walk) and we have FOV kick enabled
             if (_isWalking != wasWalking && useFovKick && _controller.velocity.sqrMagnitude > 0)
@@ -333,10 +336,11 @@ namespace LIMBO.Movement
         {
             Vector3 newCameraPosition;
             if (!useHeadBob) return;
-            if (_controller.velocity.magnitude > 0 && (grndRemValue > 0))
+            if (_controller.velocity.magnitude > 0 && (grndRem > 0))
             {
                 var camTransform = _cam.transform;
-                camTransform.localPosition = headBob.DoHeadBob(_controller.velocity.magnitude + speed * (_isWalking ? 1f : stepLength));
+                camTransform.localPosition =
+                    headBob.DoHeadBob(_controller.velocity.magnitude + speed * (_isWalking ? 1f : runStepLength));
                 newCameraPosition = camTransform.localPosition;
                 newCameraPosition.y = camTransform.localPosition.y - jumpBob.Offset();
             }
@@ -377,10 +381,10 @@ namespace LIMBO.Movement
 
         private void ProgressStepCycle(float speed)
         {
-            float moveAvg = (Mathf.Abs(moveDir.x) + Mathf.Abs(moveDir.z)) / 2;
-            if (_controller.velocity.sqrMagnitude > 0 && (moveInput.x != 0 || moveInput.y != 0))
-                _stepCycle += (_controller.velocity.magnitude + moveAvg * (_isWalking ? 1f : stepLength)) *
-                              Time.fixedDeltaTime;
+            float moveAvg = (Mathf.Abs(_moveDir.x) + Mathf.Abs(_moveDir.z)) / 2;
+            if (_controller.velocity.sqrMagnitude > 0 && (_moveInput.x != 0 || _moveInput.y != 0))
+                _stepCycle += (_controller.velocity.magnitude + moveAvg * (_isWalking ? 1f : runStepLength)) *
+                Time.fixedDeltaTime;
 
             if (!(_stepCycle > _nextStep)) return;
 
@@ -392,14 +396,19 @@ namespace LIMBO.Movement
         private void PlayFootStepAudio()
         {
             if (!_controller.isGrounded) return;
-            // pick & play a random footstep sound from the array,
-            // excluding sound at index 0
-            var n = Random.Range(1, footstepSounds.Length);
-            _audioSource.clip = footstepSounds[n];
-            _audioSource.PlayOneShot(_audioSource.clip);
-            // move picked sound to index 0 so it's not picked next time
-            footstepSounds[n] = footstepSounds[0];
-            footstepSounds[0] = _audioSource.clip;
+
+            if (footstepSounds.Length > 0)
+            {
+                // pick & play a random footstep sound from the array,
+                // excluding sound at index 0
+                var n = Random.Range(1, footstepSounds.Length);
+                _audioSource.clip = footstepSounds[n];
+                _audioSource.PlayOneShot(_audioSource.clip);
+
+                // move picked sound to index 0 so it's not picked next time
+                footstepSounds[n] = footstepSounds[0];
+                footstepSounds[0] = _audioSource.clip;
+            }
         }
 
         #endregion

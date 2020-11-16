@@ -11,7 +11,7 @@ namespace LIMBO.Movement
 
         public AnimationCurve Bobcurve = new AnimationCurve(new Keyframe(0f, 0f), new Keyframe(0.5f, 1f),
             new Keyframe(1f, 0f), new Keyframe(1.5f, -1f),
-            new Keyframe(2f, 0f));
+            new Keyframe(2f, 0f)); // sin curve for head bob
 
         public float VerticaltoHorizontalRatio = 1f;
         private float m_BobBaseInterval;
@@ -27,6 +27,7 @@ namespace LIMBO.Movement
             m_BobBaseInterval = bobBaseInterval;
             m_OriginalCameraPosition = camera.transform.localPosition;
 
+            // get the length of the curve in time
             m_Time = Bobcurve[Bobcurve.length - 1].time;
         }
 
@@ -36,8 +37,16 @@ namespace LIMBO.Movement
             var xPos = m_OriginalCameraPosition.x + Bobcurve.Evaluate(m_CyclePositionX) * HorizontalBobRange;
             var yPos = m_OriginalCameraPosition.y + Bobcurve.Evaluate(m_CyclePositionY) * VerticalBobRange;
 
-            m_CyclePositionX += speed * Time.deltaTime / m_BobBaseInterval;
-            m_CyclePositionY += speed * Time.deltaTime / m_BobBaseInterval * VerticaltoHorizontalRatio;
+            if (m_BobBaseInterval == 0)
+            {
+                m_CyclePositionX = 0;
+                m_CyclePositionY = 0;
+            }
+            else
+            {
+                m_CyclePositionX += speed * Time.deltaTime / m_BobBaseInterval;
+                m_CyclePositionY += speed * Time.deltaTime / m_BobBaseInterval * VerticaltoHorizontalRatio;
+            }
 
             if (m_CyclePositionX > m_Time) m_CyclePositionX = m_CyclePositionX - m_Time;
             if (m_CyclePositionY > m_Time) m_CyclePositionY = m_CyclePositionY - m_Time;
