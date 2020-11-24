@@ -334,12 +334,12 @@ MonoBehaviour:
   m_CameraType: 0
   m_CameraOutput: 0
   m_Cameras: []
-  m_RendererIndex: -1
+  m_RendererIndex: 0
   m_VolumeLayerMask:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 55
   m_VolumeTrigger: {fileID: 0}
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
@@ -475,15 +475,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53b63e00a8b951247b5436f03a3fd550, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkSpeed: 1.25
-  runSpeed: 1.75
+  walkSpeed: 1.5
+  runSpeed: 2.5
   canAirWalk: 0
   runStepLength: 0.7
   midAirDamping: 0.5
   movementDamping: 0.5
-  _isWalking: 1
+  _isWalking: 0
   _canRun: 1
-  jumpSpeed: 9
+  jumpSpeed: 15
   jumpCut: 0.5
   coyoteJump: 0.2
   grndRem: 0.2
@@ -497,7 +497,7 @@ MonoBehaviour:
     smooth: 0
     smoothTime: 5
     lockCursor: 1
-  gravityScale: 2
+  gravityScale: 3
   groundForce: 3
   _useGravity: 1
   jumpSound: {fileID: 0}
@@ -505,8 +505,8 @@ MonoBehaviour:
   footstepSounds: []
   useFovKick: 1
   fovKick:
-    Camera: {fileID: 0}
-    originalFov: 0
+    Camera: {fileID: 963194227}
+    originalFov: 60
     FOVIncrease: 3
     TimeToIncrease: 1
     TimeToDecrease: 1
