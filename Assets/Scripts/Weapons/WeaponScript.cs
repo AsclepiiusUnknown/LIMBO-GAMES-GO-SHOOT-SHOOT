@@ -10,11 +10,19 @@ public class WeaponScript : MonoBehaviour
     [SerializeField] private float baseDamage = 1f;
     [SerializeField] private float criticalDamage = 0f;
     [SerializeField] private float range = 100f;
+    [SerializeField] private float extendedRange = 200f;
+    [SerializeField] private float inaccuracy = 0.01f;
+    [SerializeField] private int shotCount = 1;
     [SerializeField] private bool projectile;
     [SerializeField] private Transform firePosition;
     [SerializeField] private bool tracer = false;
     [SerializeField] private GameObject tracerPrefab;
     [SerializeField] private float tracerLifetime = 0.1f;
+    [SerializeField] private bool shell = false;
+    [SerializeField] private List<Transform> shellPoints = new List<Transform>();
+    [SerializeField] private GameObject shellPrefab;
+    [SerializeField] private float shellLifetime = 4f;
+    [SerializeField] private float shellVelocity = 1f;
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private float recoil = 1f;
     private DamageReceiverScript playerRef;
@@ -26,6 +34,9 @@ public class WeaponScript : MonoBehaviour
     {
         UpdateAmmo(maxAmmo);
         isInputAvailable = true;
+
+        // Temp Jank
+        playerCamera = FindObjectOfType<Camera>();
     }
 
     private void Update()
@@ -40,10 +51,33 @@ public class WeaponScript : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            SetAnimatorTrigger("Fired");
-            MakeInputUnavailable();
+            RequestFire();
         }
         else if (Input.GetKeyDown(KeyCode.R))
+        {
+            RequestReload();
+        }
+    }
+
+    void RequestFire()
+    {
+        if (isInputAvailable)
+        {
+            if (currentAmmo > 0 || maxAmmo < 0)
+            {
+                SetAnimatorTrigger("Fired");
+                MakeInputUnavailable();
+            }
+            else
+            {
+                RequestReload();
+            }
+        }
+    }
+
+    void RequestReload()
+    {
+        if (isInputAvailable && currentAmmo != maxAmmo)
         {
             SetAnimatorTrigger("Reload");
             MakeInputUnavailable();
@@ -67,44 +101,53 @@ public class WeaponScript : MonoBehaviour
         anim.SetTrigger(triggerName);
     }
 
+    Vector3 CalculateInaccuracy()
+    {
+        Vector3 nVec = new Vector3(Random.Range(-inaccuracy, inaccuracy), Random.Range(-inaccuracy, inaccuracy), 0);
+        Vector3 tVec = nVec + playerCamera.transform.forward;
+        return tVec;
+    }
+
     public virtual void FireAction()
     {
-        RaycastHit hit = new RaycastHit();
-        Ray rayC = new Ray(playerCamera.gameObject.transform.position, playerCamera.gameObject.transform.forward);
-        bool prjFired = false;
-        bool crit = false;
-        if (Physics.Raycast(rayC, out hit, range * 3))
+        for (int i = 0; i < shotCount; i++)
         {
-            if (projectile)
+            RaycastHit hit = new RaycastHit();
+            Vector3 inacc = CalculateInaccuracy();
+            Ray rayC = new Ray(playerCamera.transform.position, inacc);
+            bool prjFired = false;
+            bool crit = false;
+            if (Physics.Raycast(rayC, out hit, range + extendedRange))
             {
-                SpawnProjectile(firePosition.transform.position, Quaternion.LookRotation(hit.point - firePosition.transform.position, Vector3.up), baseDamage);
-                prjFired = true;
-            }
-            else if (hit.collider.GetComponent<DamageReceiverScript>() && hit.collider.GetComponent<DamageReceiverScript>().IsDamageAllowed(playerRef, false))
-            {
-                if (criticalDamage > 0 && hit.collider == hit.collider.GetComponent<DamageReceiverScript>().CriticalCollider)
+                if (projectile)
                 {
-                    crit = true;
+                    SpawnProjectile(firePosition.transform.position, Quaternion.LookRotation(hit.point - firePosition.transform.position, Vector3.up), baseDamage);
+                    prjFired = true;
                 }
-                float dmg = CalculateDamage(Vector3.Distance(hit.point, playerCamera.gameObject.transform.position), crit);
-                DealDamage(hit.collider.gameObject, dmg, crit);
+                else if (hit.collider.GetComponent<DamageReceiverScript>() && hit.collider.GetComponent<DamageReceiverScript>().IsDamageAllowed(playerRef, false))
+                {
+                    if (criticalDamage > 0 && hit.collider == hit.collider.GetComponent<DamageReceiverScript>().CriticalCollider)
+                    {
+                        crit = true;
+                    }
+                    float dmg = CalculateDamage(Vector3.Distance(hit.point, playerCamera.transform.position), crit);
+                    DealDamage(hit.collider.gameObject, dmg, crit);
+                }
+                if (tracer)
+                {
+                    SpawnTracer(hit.point);
+                }
             }
-            if (tracer)
+            else if (tracer)
             {
-                SpawnTracer(hit.point);
+                SpawnTracer((inacc * (range + extendedRange)) + playerCamera.transform.position);
+            }
+            if (projectile && !prjFired)
+            {
+                SpawnProjectile(firePosition.transform.position, Quaternion.LookRotation((inacc * (range + extendedRange) + playerCamera.transform.position) - firePosition.transform.position, Vector3.up), baseDamage);
             }
         }
-        else if (tracer)
-        {
-            SpawnTracer((playerCamera.gameObject.transform.forward * range * 3) + playerCamera.gameObject.transform.position);
-        }
-        if (projectile && !prjFired)
-        {
-            SpawnProjectile(firePosition.transform.position, Quaternion.LookRotation((playerCamera.gameObject.transform.forward * range * 3 + playerCamera.gameObject.transform.position) - firePosition.transform.position, Vector3.up), baseDamage);
-        }
-
         //Recoil here: playerRef.ReceiveRecoil(recoil);
-
         UpdateAmmo(-ammoPerShot);
     }
 
@@ -155,7 +198,7 @@ public class WeaponScript : MonoBehaviour
         float dmg = baseDamage;
         if (distance > range)
         {
-            dmg = Mathf.Clamp(dmg - ((distance - range) / (range * 2) * baseDamage), 1, baseDamage);
+            dmg = Mathf.Clamp(dmg - ((distance - range) / extendedRange * baseDamage), 1, baseDamage);
         }
         if (crit)
         {
@@ -182,7 +225,12 @@ public class WeaponScript : MonoBehaviour
 
     public void SpawnShell(int shellIndex)
     {
-
+        GameObject shl = Instantiate(shellPrefab, shellPoints[shellIndex].position, shellPoints[shellIndex].rotation);
+        if (shl.GetComponent<Rigidbody>())
+        {
+            shl.GetComponent<Rigidbody>().velocity = shellPoints[shellIndex].forward * shellVelocity;
+        }
+        Destroy(shl, shellLifetime);
     }
 
     public void PlayAudioClip(string clipName)
