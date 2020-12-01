@@ -23,13 +23,14 @@ public class WeaponSwapper : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
+            print("This should get here.");
             ChangeWeapon(0);
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             ChangeWeapon(1);
         }
-        if (Input.GetKeyDown(KeyCode.Alpha3))
+        if (Input.GetKeyDown(KeyCode.Alpha3) && weaponList.Count > 2)
         {
             ChangeWeapon(2);
         }
@@ -41,6 +42,7 @@ public class WeaponSwapper : MonoBehaviour
         {
             activeWeapon.gameObject.SetActive(false);
             weaponList[IDToChange].gameObject.SetActive(true);
+            activeWeapon = weaponList[IDToChange];
         }
     }
 }
