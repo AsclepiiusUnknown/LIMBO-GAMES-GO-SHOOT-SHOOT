@@ -13935,6 +13935,86 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!1001 &253938647
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 1860870368}
+    m_Modifications:
+    - target: {fileID: 2784302883984048806, guid: bee26c9f87be18743930efb1c4dc1809,
+        type: 3}
+      propertyPath: m_Name
+      value: RevolverDull
+      objectReference: {fileID: 0}
+    - target: {fileID: 2784302883984048806, guid: bee26c9f87be18743930efb1c4dc1809,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6147526220479546254, guid: bee26c9f87be18743930efb1c4dc1809,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6147526220479546254, guid: bee26c9f87be18743930efb1c4dc1809,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6147526220479546254, guid: bee26c9f87be18743930efb1c4dc1809,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6147526220479546254, guid: bee26c9f87be18743930efb1c4dc1809,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6147526220479546254, guid: bee26c9f87be18743930efb1c4dc1809,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6147526220479546254, guid: bee26c9f87be18743930efb1c4dc1809,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6147526220479546254, guid: bee26c9f87be18743930efb1c4dc1809,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6147526220479546254, guid: bee26c9f87be18743930efb1c4dc1809,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6147526220479546254, guid: bee26c9f87be18743930efb1c4dc1809,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6147526220479546254, guid: bee26c9f87be18743930efb1c4dc1809,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6147526220479546254, guid: bee26c9f87be18743930efb1c4dc1809,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: bee26c9f87be18743930efb1c4dc1809, type: 3}
+--- !u!4 &253938648 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6147526220479546254, guid: bee26c9f87be18743930efb1c4dc1809,
+    type: 3}
+  m_PrefabInstance: {fileID: 253938647}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &255255575
 GameObject:
   m_ObjectHideFlags: 0
@@ -54307,6 +54387,7 @@ GameObject:
   - component: {fileID: 1383277473}
   - component: {fileID: 1383277472}
   - component: {fileID: 1383277471}
+  - component: {fileID: 1383277478}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -54618,6 +54699,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1383277478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1383277470}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b47a1d981f380f045878ea95104572ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weaponList: []
 --- !u!43 &1384762331
 Mesh:
   m_ObjectHideFlags: 0
@@ -71077,6 +71171,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1945667899}
+  - {fileID: 253938648}
   m_Father: {fileID: 1383277477}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

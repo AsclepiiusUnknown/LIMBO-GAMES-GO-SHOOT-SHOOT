@@ -28,6 +28,7 @@ public class WeaponScript : MonoBehaviour
     private DamageReceiverScript playerRef;
     private Camera playerCamera;
     private bool isInputAvailable;
+    public bool IsInputAvailable { get { return isInputAvailable; } }
     private int idleLoopCount = 0;
 
     private void Start()
