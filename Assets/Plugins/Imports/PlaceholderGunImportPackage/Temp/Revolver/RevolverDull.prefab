@@ -802,7 +802,7 @@ MonoBehaviour:
   maxAmmo: 6
   ammoPerShot: 1
   baseDamage: 33
-  criticalDamage: 0
+  criticalDamage: 0.6
   range: 30
   extendedRange: 60
   inaccuracy: 0.01
@@ -827,6 +827,7 @@ MonoBehaviour:
   shellVelocity: 1
   projectilePrefab: {fileID: 0}
   recoil: 1
+  playerRef: {fileID: 0}
 --- !u!1 &3100883576035323775
 GameObject:
   m_ObjectHideFlags: 0

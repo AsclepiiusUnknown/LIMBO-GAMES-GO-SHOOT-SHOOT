@@ -62,7 +62,7 @@ public class WeaponSwapper : MonoBehaviour
         }
 
         if (GetComponentInParent<NetworkPlayer>() == null)
-            Debug.LogError(" ");
+            Debug.LogError("Cannot find Network Player.");
         GetComponentInParent<NetworkPlayer>().SwitchWeapon(IDToChange);
     }
 }

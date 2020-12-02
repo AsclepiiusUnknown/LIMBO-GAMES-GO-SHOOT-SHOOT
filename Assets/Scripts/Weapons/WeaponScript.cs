@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Mirror;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -25,7 +26,8 @@ public class WeaponScript : MonoBehaviour
     [SerializeField] private float shellVelocity = 1f;
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private float recoil = 1f;
-    private DamageReceiverScript playerRef;
+    [SerializeField] private DamageReceiverScript playerRef;
+    private NetworkPlayer playerNetworkRef;
     private Camera playerCamera;
     private bool isInputAvailable;
     public bool IsInputAvailable { get { return isInputAvailable; } }
@@ -35,9 +37,8 @@ public class WeaponScript : MonoBehaviour
     {
         UpdateAmmo(maxAmmo);
         isInputAvailable = true;
-
-        // Temp Jank
-        playerCamera = FindObjectOfType<Camera>();
+        playerCamera = playerRef.GetComponentInChildren<Camera>();
+        playerNetworkRef = playerRef.NetPlayerRef;
     }
 
     private void Update()
@@ -50,13 +51,16 @@ public class WeaponScript : MonoBehaviour
 
     void CheckForInput()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (playerNetworkRef.isLocalPlayer)
         {
-            RequestFire();
-        }
-        else if (Input.GetKeyDown(KeyCode.R))
-        {
-            RequestReload();
+            if (Input.GetMouseButtonDown(0))
+            {
+                RequestFire();
+            }
+            else if (Input.GetKeyDown(KeyCode.R))
+            {
+                RequestReload();
+            }
         }
     }
 
@@ -109,11 +113,13 @@ public class WeaponScript : MonoBehaviour
         return tVec;
     }
 
+    /*
     public void FireAction(bool _isLocalPlayer)
     {
         if (!_isLocalPlayer)
             FireAction();
     }
+    */
 
     public virtual void FireAction()
     {
@@ -138,7 +144,7 @@ public class WeaponScript : MonoBehaviour
                         crit = true;
                     }
                     float dmg = CalculateDamage(Vector3.Distance(hit.point, playerCamera.transform.position), crit);
-                    DealDamage(hit.collider.gameObject, dmg, crit);
+                    DealDamage(hit.collider.gameObject, dmg);
                 }
                 if (tracer)
                 {
@@ -157,7 +163,7 @@ public class WeaponScript : MonoBehaviour
         //Recoil here: playerRef.ReceiveRecoil(recoil);
         UpdateAmmo(-ammoPerShot);
 
-        GetComponentInParent<NetworkPlayer>().Shoot();
+        //GetComponentInParent<NetworkPlayer>().Shoot();
     }
 
     public void ReloadAction()
@@ -178,12 +184,18 @@ public class WeaponScript : MonoBehaviour
         }
     }
 
-    public void DealDamage(GameObject target, float damageToDeal, bool critical = false, bool showNumber = true)
+    public void DealDamage(GameObject target, float damageToDeal)
     {
         if (target.GetComponent<DamageReceiverScript>())
         {
-            print("sending damage...");
-            target.GetComponent<DamageReceiverScript>().ReceiveDamage(damageToDeal, playerRef, critical, showNumber);
+            if (FindObjectOfType<GameNetworkManager>())
+            {
+                playerNetworkRef.ReplicateDamageToPlayer(target.GetComponent<DamageReceiverScript>().NetPlayerRef.netIdentity.netId, damageToDeal);
+            }
+            else
+            {
+                target.GetComponent<DamageReceiverScript>().ReceiveDamage(damageToDeal);
+            }
         }
     }
 

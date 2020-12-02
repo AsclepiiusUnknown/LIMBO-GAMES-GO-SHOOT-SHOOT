@@ -86,6 +86,52 @@ public class NetworkPlayer : NetworkBehaviour
             CmdShoot();
     }
 
+    // Incoming Ty Jank
+
+    public void ReplicateDamageToPlayer(uint netwID, float damage)
+    {
+        CmdReplicateDamageToPlayer(netwID, damage);
+    }
+
+    [Command]
+    public void CmdReplicateDamageToPlayer(uint netwoID, float damage)
+    {
+        foreach (NetworkPlayer player in FindObjectsOfType<NetworkPlayer>())
+        {
+            print("Network ID: " + player.netIdentity.netId);
+            if (player.netIdentity.netId == netwoID)
+            {
+                player.RpcReplicateDamageToPlayer(damage);
+                break;
+            }
+        }
+    }
+
+    [ClientRpc]
+    public void RpcReplicateDamageToPlayer(float damage)
+    {
+        GetComponentInChildren<DamageReceiverScript>().ReceiveDamage(damage);
+    }
+
+    public void MaxHealthPlayer()
+    {
+        CmdMaxHealthPlayer();
+    }
+
+    [Command]
+    public void CmdMaxHealthPlayer()
+    {
+        RpcMaxHealthPlayer();
+    }
+
+    [ClientRpc]
+    public void RpcMaxHealthPlayer()
+    {
+        gameplayPlayer.GetComponent<DamageReceiverScript>().SetHealthToMax();
+    }
+
+    // Ty Jank over
+
     #region Switch Weapon
     [Command]
     // Command is a server function
@@ -111,7 +157,7 @@ public class NetworkPlayer : NetworkBehaviour
     [ClientRpc]
     public void RpcShoot()
     {
-        weapon.FireAction(isLocalPlayer);
+        //weapon.FireAction(isLocalPlayer);
     }
     #endregion
 
@@ -154,7 +200,19 @@ public class NetworkPlayer : NetworkBehaviour
                 StartCoroutine(LoadGameScene());
 
                 player.gameplayPlayer.GetComponent<LIMBO.Movement.PlayerMovement>().Setup();
+
+                // Incoming Ty Jank
+
+                player.GetComponentInChildren<AudioListener>().enabled = true;
+                player.GetComponentInChildren<Camera>().enabled = true;
             }
+            else
+            {
+                player.GetComponentInChildren<AudioListener>().enabled = false;
+                player.GetComponentInChildren<Camera>().enabled = false;
+            }
+
+            // Ty Jank over
         }
     }
 

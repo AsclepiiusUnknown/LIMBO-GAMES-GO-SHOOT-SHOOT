@@ -80,7 +80,7 @@ MonoBehaviour:
   maxAmmo: -1
   ammoPerShot: 1
   baseDamage: 40
-  criticalDamage: 0
+  criticalDamage: 0.3
   range: 100
   extendedRange: 200
   inaccuracy: 0.01
@@ -98,6 +98,7 @@ MonoBehaviour:
   projectilePrefab: {fileID: 3761979080097693084, guid: a7edf8fa06e4c73418d7818ea2802dba,
     type: 3}
   recoil: 1
+  playerRef: {fileID: 0}
 --- !u!95 &1992224975449031944
 Animator:
   serializedVersion: 3

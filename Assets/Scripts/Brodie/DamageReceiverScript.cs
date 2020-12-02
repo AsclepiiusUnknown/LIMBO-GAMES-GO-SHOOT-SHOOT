@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class DamageReceiverScript : MonoBehaviour
 {
+    [SerializeField] NetworkPlayer netPlayerRef;
+    public NetworkPlayer NetPlayerRef { get { return netPlayerRef; } }
+    [SerializeField] float maxHealth = 100f;
+    private float currentHealth;
     [SerializeField] int teamID = 0;
     public int TeamID
     {
@@ -34,24 +38,57 @@ public class DamageReceiverScript : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        currentHealth = maxHealth;
+    }
+
     public bool IsDamageAllowed(DamageReceiverScript inDamager, bool selfDamage = false)
     {
+        return true;
+        // Removed for simplicity, opposite of jank
+        /* 
         if ((teamID != inDamager.TeamID || teamID == -1 || (selfDamage && inDamager == this) || receiveFromAll) && damageReceivable)
         {
             return true;
         }
         return false;
+        */
     }
 
-    public virtual void ReceiveDamage(float damage, DamageReceiverScript inDamager, bool showCrit = false, bool showDamageNumber = true)
+    public virtual void ReceiveDamage(float damage)
     {
         damage = Mathf.Floor(damage);
-        /*
-        if (inDamager.GetType() == typeof(Player) && GetComponent<Collider>() && showDamageNumber)
+        currentHealth -= damage;
+        if (currentHealth <= 0)
         {
-            (inDamager as Player).hudRef.ShowDamageNumber(GetComponent<Collider>().bounds.center, damage, showCrit);
+            print("Player is now dead.");
+            Death();
         }
-        */
-        print(damage + " damage received from " + inDamager);
+        else
+        {
+            print("Player took " + damage + " damage.");
+        }
+    }
+
+    private void Death()
+    {
+        if (netPlayerRef.isLocalPlayer)
+        {
+            GetComponent<CharacterController>().enabled = false;
+            transform.position = netPlayerRef.transform.position;
+            GetComponent<CharacterController>().enabled = true;
+            netPlayerRef.MaxHealthPlayer();
+        }
+    }
+
+    public void HealDamage(float damage)
+    {
+        currentHealth = Mathf.Clamp(currentHealth + damage, 0, maxHealth);
+    }
+
+    public void SetHealthToMax()
+    {
+        HealDamage(maxHealth);
     }
 }

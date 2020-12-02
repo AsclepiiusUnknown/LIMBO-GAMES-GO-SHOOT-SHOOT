@@ -35,7 +35,15 @@ public class ProjectileScript : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         // Check and deal damage
-        if (sticky)
+        if (collision.collider.CompareTag("Player"))
+        {
+            if (collision.collider.GetComponent<DamageReceiverScript>().IsDamageAllowed(owner) && collision.collider.GetComponentInParent<NetworkPlayer>())
+            {
+                owner.GetComponentInParent<NetworkPlayer>().ReplicateDamageToPlayer(collision.collider.GetComponentInParent<NetworkPlayer>().netIdentity.netId, damage);
+                Destroy(gameObject);
+            }
+        }
+        else if (sticky)
         {
             rb.velocity = Vector3.zero;
             rb.isKinematic = true;
