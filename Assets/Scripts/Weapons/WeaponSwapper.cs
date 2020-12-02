@@ -6,14 +6,20 @@ public class WeaponSwapper : MonoBehaviour
 {
     [SerializeField] private List<WeaponScript> weaponList = new List<WeaponScript>();
     private WeaponScript activeWeapon;
+    NetworkPlayer networkPlayer;
+    LIMBO.Movement.PlayerMovement playerMovement;
 
     private void Start()
     {
+        networkPlayer = GetComponentInParent<NetworkPlayer>();
+        playerMovement = GetComponent<LIMBO.Movement.PlayerMovement>();
+
         for (int i = 0; i < weaponList.Count; i++)
         {
             if (weaponList[i].gameObject.activeInHierarchy)
             {
                 activeWeapon = weaponList[i];
+                networkPlayer.weapon = activeWeapon;
                 break;
             }
         }
@@ -21,9 +27,12 @@ public class WeaponSwapper : MonoBehaviour
 
     private void Update()
     {
+        if (!playerMovement.IsSetup)
+            return;
+
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            print("This should get here.");
+            // print("This should get here.");
             ChangeWeapon(0);
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
@@ -36,6 +45,12 @@ public class WeaponSwapper : MonoBehaviour
         }
     }
 
+    public void ChangeWeapon(int IDToChange, bool _isLocalPlayer)
+    {
+        if (!_isLocalPlayer)
+            ChangeWeapon(IDToChange);
+    }
+
     private void ChangeWeapon(int IDToChange)
     {
         if (activeWeapon.IsInputAvailable && activeWeapon != weaponList[IDToChange])
@@ -43,6 +58,11 @@ public class WeaponSwapper : MonoBehaviour
             activeWeapon.gameObject.SetActive(false);
             weaponList[IDToChange].gameObject.SetActive(true);
             activeWeapon = weaponList[IDToChange];
+            networkPlayer.weapon = activeWeapon;
         }
+
+        if (GetComponentInParent<NetworkPlayer>() == null)
+            Debug.LogError(" ");
+        GetComponentInParent<NetworkPlayer>().SwitchWeapon(IDToChange);
     }
 }

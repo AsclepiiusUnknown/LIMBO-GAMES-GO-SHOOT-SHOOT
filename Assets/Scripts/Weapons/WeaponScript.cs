@@ -109,6 +109,12 @@ public class WeaponScript : MonoBehaviour
         return tVec;
     }
 
+    public void FireAction(bool _isLocalPlayer)
+    {
+        if (!_isLocalPlayer)
+            FireAction();
+    }
+
     public virtual void FireAction()
     {
         for (int i = 0; i < shotCount; i++)
@@ -150,6 +156,8 @@ public class WeaponScript : MonoBehaviour
         }
         //Recoil here: playerRef.ReceiveRecoil(recoil);
         UpdateAmmo(-ammoPerShot);
+
+        GetComponentInParent<NetworkPlayer>().Shoot();
     }
 
     public void ReloadAction()
@@ -174,6 +182,7 @@ public class WeaponScript : MonoBehaviour
     {
         if (target.GetComponent<DamageReceiverScript>())
         {
+            print("sending damage...");
             target.GetComponent<DamageReceiverScript>().ReceiveDamage(damageToDeal, playerRef, critical, showNumber);
         }
     }
@@ -236,7 +245,7 @@ public class WeaponScript : MonoBehaviour
 
     public void PlayAudioClip(string clipName)
     {
-        print("Imagine " + clipName + " is playing right now.");
+        print("Imagine the sound '" + clipName + "' is playing right now.");
     }
 
     public void LogIdle()

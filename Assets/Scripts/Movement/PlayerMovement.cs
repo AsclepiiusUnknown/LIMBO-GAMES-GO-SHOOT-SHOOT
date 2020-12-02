@@ -98,14 +98,18 @@ namespace LIMBO.Movement
         private float _nextStep;
         #endregion
 
+        public bool IsSetup { get { return isSetup; } }
+        private bool isSetup = false;
+
         #endregion
 
-        private void Start()
+        public void Setup()
         {
             #region |Component Gathering
             _controller = GetComponent<CharacterController>();
             _audioSource = GetComponent<AudioSource>();
-            _cam = Camera.main;
+            _cam = GetComponentInChildren<Camera>();
+            _cam.enabled = true;
             #endregion
 
             #region |Component Setup
@@ -121,10 +125,15 @@ namespace LIMBO.Movement
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
             #endregion
+
+            isSetup = true;
         }
 
         private void Update()
         {
+            if (!isSetup)
+                return;
+
             #region |Timers
 
             _coyoteJump -= Time.deltaTime;
@@ -190,6 +199,9 @@ namespace LIMBO.Movement
 
         private void FixedUpdate()
         {
+            if (!isSetup)
+                return;
+
             #region |Movement
 
             #region ||Input
@@ -205,9 +217,7 @@ namespace LIMBO.Movement
             #region ||Ground Normal Calculations
 
             // Get a normal for the surface that is being touched to move along it
-            Physics.SphereCast(transform.position, _controller.radius, Vector3.down, out var hitInfo,
-                _controller.height / 2f, Physics.AllLayers, QueryTriggerInteraction.Ignore);
-            desiredMove = Vector3.ProjectOnPlane(desiredMove, hitInfo.normal).normalized;
+            Physics.SphereCast(transform.position, _controller.radius, Vector3.down, out var hitInfo, _controller.height / 2f, Physics.AllLayers, QueryTriggerInteraction.Ignore); desiredMove = Vector3.ProjectOnPlane(desiredMove, hitInfo.normal).normalized;
 
             #endregion
 
