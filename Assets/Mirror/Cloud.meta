@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<< HEAD:Assets/Mirror/Cloud.meta
 guid: 73a9bb2dacafa8141bce8feef34e33a7
+=======
+guid: 4c4ee452d287e7f43a2a78d2806b8570
+>>>>>>> d851eed29390a30d74bbd3950a1af508b4a8ff6f:Assets/Scenes/Sophie/textures/graves.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
