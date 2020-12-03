@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
 public class DamageReceiverScript : MonoBehaviour
 {
@@ -8,6 +9,8 @@ public class DamageReceiverScript : MonoBehaviour
     public NetworkPlayer NetPlayerRef { get { return netPlayerRef; } }
     [SerializeField] float maxHealth = 100f;
     private float currentHealth;
+    public static List<NetworkStartPosition> spawns;
+    public static int spawnIndex = 0;
     [SerializeField] int teamID = 0;
     public int TeamID
     {
@@ -41,6 +44,15 @@ public class DamageReceiverScript : MonoBehaviour
     private void Start()
     {
         currentHealth = maxHealth;
+
+        if (netPlayerRef.isLocalPlayer)
+            GatherSpawnPoints();
+    }
+
+    void GatherSpawnPoints()
+    {
+        spawns = new List<NetworkStartPosition>(FindObjectsOfType<NetworkStartPosition>());
+        print(spawns.Count);
     }
 
     public bool IsDamageAllowed(DamageReceiverScript inDamager, bool selfDamage = false)
@@ -52,7 +64,7 @@ public class DamageReceiverScript : MonoBehaviour
         {
             return true;
         }
-        return false;
+        return false; 
         */
     }
 
@@ -75,11 +87,19 @@ public class DamageReceiverScript : MonoBehaviour
     {
         if (netPlayerRef.isLocalPlayer)
         {
-            GetComponent<CharacterController>().enabled = false;
-            transform.position = netPlayerRef.transform.position;
-            GetComponent<CharacterController>().enabled = true;
-            netPlayerRef.MaxHealthPlayer();
+            Respawn(GetComponent<CharacterController>());
         }
+    }
+
+    public void Respawn(CharacterController _controller)
+    {
+        _controller.enabled = false;
+        _controller.transform.position = spawns[spawnIndex].transform.position;
+        spawnIndex++;
+        if (spawnIndex >= spawns.Count)
+            spawnIndex = 0;
+        _controller.enabled = true;
+        netPlayerRef.MaxHealthPlayer();
     }
 
     public void HealDamage(float damage)
