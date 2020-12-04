@@ -110,6 +110,7 @@ namespace LIMBO.Movement
             _audioSource = GetComponent<AudioSource>();
             _cam = GetComponentInChildren<Camera>();
             _cam.enabled = true;
+            GetComponentInChildren<Canvas>().enabled = true;
             #endregion
 
             #region |Component Setup

@@ -1,11 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class WeaponSwapper : MonoBehaviour
 {
     [SerializeField] private List<WeaponScript> weaponList = new List<WeaponScript>();
     private WeaponScript activeWeapon;
+    public TextMeshProUGUI clipAmount;
+    public TextMeshProUGUI bagAmount;
     NetworkPlayer networkPlayer;
     LIMBO.Movement.PlayerMovement playerMovement;
 
@@ -23,6 +26,8 @@ public class WeaponSwapper : MonoBehaviour
                 break;
             }
         }
+
+        UpdateUI(clipAmount, bagAmount, activeWeapon);
     }
 
     private void Update()
@@ -59,10 +64,17 @@ public class WeaponSwapper : MonoBehaviour
             weaponList[IDToChange].gameObject.SetActive(true);
             activeWeapon = weaponList[IDToChange];
             networkPlayer.weapon = activeWeapon;
+            UpdateUI(clipAmount, bagAmount, activeWeapon);
         }
 
         if (GetComponentInParent<NetworkPlayer>() == null)
             Debug.LogError("Cannot find Network Player.");
         GetComponentInParent<NetworkPlayer>().SwitchWeapon(IDToChange);
+    }
+
+    public static void UpdateUI(TextMeshProUGUI _clip, TextMeshProUGUI _bag, WeaponScript _activeWeapon)
+    {
+        _clip.text = _activeWeapon.CurrentAmmo.ToString();
+        _bag.text = _activeWeapon.maxAmmo.ToString();
     }
 }

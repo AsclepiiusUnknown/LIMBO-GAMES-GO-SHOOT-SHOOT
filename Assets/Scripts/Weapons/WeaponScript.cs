@@ -5,9 +5,11 @@ using UnityEngine;
 
 public class WeaponScript : MonoBehaviour
 {
-    [SerializeField] private int maxAmmo;
+    public int maxAmmo;
     private int currentAmmo;
-    [SerializeField] private int ammoPerShot = 1;
+    [HideInInspector] public int CurrentAmmo { get { return currentAmmo; } }
+    [SerializeField]
+    private int ammoPerShot = 1;
     [SerializeField] private float baseDamage = 1f;
     [SerializeField] private float criticalDamage = 0f;
     [SerializeField] private float range = 100f;
@@ -32,6 +34,7 @@ public class WeaponScript : MonoBehaviour
     private bool isInputAvailable;
     public bool IsInputAvailable { get { return isInputAvailable; } }
     private int idleLoopCount = 0;
+    WeaponSwapper swapper;
 
     private void Start()
     {
@@ -39,6 +42,8 @@ public class WeaponScript : MonoBehaviour
         isInputAvailable = true;
         playerCamera = playerRef.GetComponentInChildren<Camera>();
         playerNetworkRef = playerRef.NetPlayerRef;
+        swapper = GetComponentInParent<WeaponSwapper>();
+WeaponSwapper.UpdateUI(swapper.clipAmount,swapper.bagAmount,this);
     }
 
     private void Update()
@@ -163,6 +168,7 @@ public class WeaponScript : MonoBehaviour
         //Recoil here: playerRef.ReceiveRecoil(recoil);
         UpdateAmmo(-ammoPerShot);
 
+WeaponSwapper.UpdateUI(swapper.clipAmount,swapper.bagAmount,this);
         //GetComponentInParent<NetworkPlayer>().Shoot();
     }
 
@@ -181,6 +187,7 @@ public class WeaponScript : MonoBehaviour
         if (currentAmmo >= maxAmmo)
         {
             SetAnimatorTrigger("ReloadComplete");
+WeaponSwapper.UpdateUI(swapper.clipAmount,swapper.bagAmount,this);
         }
     }
 
