@@ -1,12 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class FlagFollowerScript : MonoBehaviour
+public class FlagFollowerScript : NetworkBehaviour
 {
     [SerializeField] private Vector3 followOffset = new Vector3(0, 1, 0);
     private FlagControllerScript controller;
-    private bool pickupAllowed = false;
+    private bool pickupAllowed = true;
     private GameObject follower = null;
     public GameObject Follower
     {
@@ -55,11 +56,19 @@ public class FlagFollowerScript : MonoBehaviour
         EnablePickup();
     }
 
+    [Server]
     private void OnTriggerEnter(Collider other)
     {
-        if (pickupAllowed && other.CompareTag("Player"))
+        if (pickupAllowed && other.CompareTag("Player") && other.GetComponentInParent<NetworkIdentity>())
         {
-            controller.ReceivePickupFromFlag(this, other.gameObject);
+            RpcReceiveCall(other.GetComponentInParent<NetworkIdentity>().netId);
         }
+    }
+
+    [ClientRpc]
+    public void RpcReceiveCall(uint networkID)
+    {
+        print("Tehaehaeh");
+        controller.ReceivePickupFromFlag(this, networkID);
     }
 }

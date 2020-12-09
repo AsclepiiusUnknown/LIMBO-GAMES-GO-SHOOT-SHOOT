@@ -1,8 +1,9 @@
-﻿using System.Collections;
+﻿using Mirror;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FlagControllerScript : MonoBehaviour
+public class FlagControllerScript : NetworkBehaviour
 {
     [SerializeField] private FlagFollowerScript blueFlag;
     [SerializeField] private FlagFollowerScript redFlag;
@@ -13,6 +14,8 @@ public class FlagControllerScript : MonoBehaviour
     {
         blueFlagStartPos = blueFlag.transform.position;
         redFlagStartPos = redFlag.transform.position;
+        blueFlag.EnablePickup();
+        redFlag.EnablePickup();
     }
 
     public void CheckDeadPlayerForFlag(GameObject player)
@@ -43,5 +46,17 @@ public class FlagControllerScript : MonoBehaviour
     {
         flag.DisablePickup();
         flag.SetFollow(pickuper);
+    }
+
+    public void ReceivePickupFromFlag(FlagFollowerScript flag, uint pickuperID)
+    {
+        flag.DisablePickup();
+        foreach (NetworkIdentity id in FindObjectsOfType<NetworkIdentity>())
+        {
+            if (id.netId == pickuperID)
+            {
+                flag.SetFollow(id.gameObject);
+            }
+        }
     }
 }
