@@ -5,10 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class Menu : MonoBehaviour
 {
-    public void SpecialBtn()
-    {
-        LoadScene("Test Scene");
-    }
 
     public void QuitBtn()
     {
@@ -19,8 +15,8 @@ public class Menu : MonoBehaviour
 #endif
     }
 
-    void LoadScene(string _scene)
+    void LoadScene()
     {
-        SceneManager.LoadScene(_scene);
+        SceneManager.LoadScene("Offline");
     }
 }
